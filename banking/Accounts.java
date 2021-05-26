@@ -34,7 +34,7 @@ public class Accounts {
                 number.append(rnd.nextInt(10));
             }
 
-            number.append(rnd.nextInt(10)); // add check digit (will be calculated in later stages)
+            number.append(generateCheckDigit(number)); // add check digit (will be calculated in later stages)
         } while (accountExists(number.toString()));
 
         StringBuilder pin = new StringBuilder();
@@ -51,5 +51,26 @@ public class Accounts {
         System.out.println("Your card PIN:");
         System.out.println(pin);
         System.out.println();
+    }
+
+    /**
+     * Generate a check digit using Luhn's Algorithm.
+     *
+     * @param number the card number to be checksummed
+     * @return check digit
+     */
+    private int generateCheckDigit(StringBuilder number) {
+        int total = 0;
+        for (int digit = 0; digit < number.length(); digit++) {
+            int num = number.charAt(digit) - '0';
+            if (digit % 2 == 0) {   // odd digit (index for odd digits will be even)
+                num *= 2;   // double it
+                if (num > 9) {
+                    num -= 9;   // subtract 9 if we're at 10 or over
+                }
+            }
+            total += num;
+        }
+        return (10 - (total % 10)) % 10;    // calculate check digit
     }
 }
