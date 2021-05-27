@@ -1,61 +1,58 @@
 package banking;
 
 public class Main {
-    static Accounts accts = new Accounts();
+    static Accounts accounts = new Accounts();
     static MenuSystem menu = new MenuSystem();
+    static MenuState state = MenuState.MAIN_MENU;
+    static CreditCard card = null;
 
     public static void main(String[] args) {
-        String choice;
+        Database db = new Database();
+        if (args.length == 2) {
+            db.createDatabase(args[1]);
+        }
+
+        MenuState choice;
 
         do {
-            choice = menu.mainMenu();
+            choice = state.equals(MenuState.MAIN_MENU) ? menu.mainMenu() : menu.cardMenu();
             switch (choice) {
-                case "CREATE":
-                    accts.generateAccount();
+                case GENERATE:
+                    accounts.generateAccount(db);
                     break;
-                case "LOGIN":
-                    login();
+                case LOG_IN:
+                    login(db);
                     break;
-                default:
+                case LOG_OUT:
+                    System.out.println("You have successfully logged out!\n");
+                    state = MenuState.MAIN_MENU;
+                    card = null;
+                    break;
+                case BALANCE:
+                    int balance = db.getBalance(card.getAccountNumber());
+                    System.out.printf("Balance: %d%n%n", balance);
                     break;
             }
+        } while (!choice.equals(MenuState.QUIT));
 
-        } while (!choice.equals("QUIT"));
-
+        db.closeDatabase();
         System.out.println("Bye!");
     }
 
-    private static void login() {
+    private static void login(Database db) {
         System.out.println("Enter your card number:");
         String number = menu.readLine();
         System.out.println("Enter your PIN:");
         String pin = menu.readLine();
         System.out.println();
 
-        if (accts.accountExists(number) && accts.getAccount(number).getPIN().equals(pin)) {
+        if (db.verifyCardAndPIN(number, pin)) {
             System.out.println("You have successfully logged in!\n");
-            loggedIn(accts.getAccount(number));
+            state = MenuState.CARD_MENU;
+            card = new CreditCard(number, pin);
         } else {
             System.out.println("Wrong card number or PIN!\n");
         }
     }
 
-    private static void loggedIn(CreditCard card) {
-        String choice;
-
-        do {
-            choice = menu.cardMenu();
-            switch (choice) {
-                case "BALANCE":
-                    System.out.printf("Balance: %.0f%n%n", card.getBalance());
-                    break;
-                case "LOG-OUT":
-                    System.out.println("You have successfully logged out!\n");
-                    break;
-                case "EXIT":
-                default:
-                    break;
-            }
-        } while (choice.equals("BALANCE"));
-    }
 }

@@ -5,19 +5,19 @@ import java.util.Scanner;
 public class MenuSystem {
     final static Scanner scanner = new Scanner(System.in);
 
-    String mainMenu() {
-        String choice = null;
+    MenuState mainMenu() {
+        MenuState choice = null;
 
         printMainMenu();
         switch (getChoice(0, 2)) {
             case 1:
-                choice = "CREATE";
+                choice = MenuState.GENERATE;
                 break;
             case 2:
-                choice = "LOGIN";
+                choice = MenuState.LOG_IN;
                 break;
             case 0:
-                choice = "QUIT";
+                choice = MenuState.QUIT;
                 break;
             default:
                 break;
@@ -32,19 +32,19 @@ public class MenuSystem {
         System.out.println("0. Exit");
     }
 
-    String cardMenu() {
-        String choice = null;
+    MenuState cardMenu() {
+        MenuState choice = null;
 
         printCardMenu();
         switch (getChoice(0, 2)) {
             case 1:
-                choice = "BALANCE";
+                choice = MenuState.BALANCE;
                 break;
             case 2:
-                choice = "LOG-OUT";
+                choice = MenuState.LOG_OUT;
                 break;
             case 0:
-                choice = "EXIT";
+                choice = MenuState.QUIT;
                 break;
             default:
                 break;

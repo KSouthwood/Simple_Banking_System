@@ -24,7 +24,7 @@ public class Accounts {
         return accounts.containsKey(number);
     }
 
-    void generateAccount() {
+    void generateAccount(Database db) {
         StringBuilder number;
 
         do {
@@ -44,6 +44,7 @@ public class Accounts {
 
         CreditCard card = new CreditCard(number.toString(), pin.toString());
         addAccount(card);
+        db.addCreditCard(number.toString(), pin.toString());
 
         System.out.println("Your card has been created");
         System.out.println("Your card number:");
