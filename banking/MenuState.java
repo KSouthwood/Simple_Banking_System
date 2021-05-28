@@ -7,5 +7,8 @@ public enum MenuState {
     GENERATE,
     LOG_IN,
     LOG_OUT,
-    BALANCE
+    BALANCE,
+    DEPOSIT,
+    TRANSFER,
+    CLOSE_ACCT
 }

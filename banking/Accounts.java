@@ -1,29 +1,21 @@
 package banking;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Random;
 
 public class Accounts {
-    private final Map<String, CreditCard> accounts = new HashMap<>();
     private static Random rnd;
 
     Accounts() {
         rnd = new Random();
     }
 
-    void addAccount(CreditCard card) {
-        accounts.put(card.getAccountNumber(), card);
-    }
-
-    CreditCard getAccount(String number) {
-        return accounts.get(number);
-    }
-
-    boolean accountExists(String number) {
-        return accounts.containsKey(number);
-    }
-
+    /**
+     * <p>Generate a 16 digit credit card number. First six digits are always
+     * the same, the next nine are random, and the last is the check digit
+     * calculated using Luhn's algorithm.</p>
+     *
+     * @param db the database that all account numbers are stored in
+     */
     void generateAccount(Database db) {
         StringBuilder number;
 
@@ -34,16 +26,14 @@ public class Accounts {
                 number.append(rnd.nextInt(10));
             }
 
-            number.append(generateCheckDigit(number)); // add check digit (will be calculated in later stages)
-        } while (accountExists(number.toString()));
+            number.append(generateCheckDigit(number.toString())); // add check digit
+        } while (db.verifyCardExists(number.toString()));
 
         StringBuilder pin = new StringBuilder();
         for (int digits = 0; digits < 4; digits++) {
             pin.append(rnd.nextInt(10));
         }
 
-        CreditCard card = new CreditCard(number.toString(), pin.toString());
-        addAccount(card);
         db.addCreditCard(number.toString(), pin.toString());
 
         System.out.println("Your card has been created");
@@ -55,12 +45,12 @@ public class Accounts {
     }
 
     /**
-     * Generate a check digit using Luhn's Algorithm.
+     * <p>Generate a check digit using Luhn's Algorithm.</p>
      *
      * @param number the card number to be checksummed
      * @return check digit
      */
-    private int generateCheckDigit(StringBuilder number) {
+    int generateCheckDigit(String number) {
         int total = 0;
         for (int digit = 0; digit < number.length(); digit++) {
             int num = number.charAt(digit) - '0';
